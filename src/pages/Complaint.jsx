@@ -1,4 +1,110 @@
+import { useState } from "react";
 import Navbar from "../components/Navbar";
+import API_URL from "../services/api";
+
+function Complaint() {
+  const [formData, setFormData] = useState({
+    name: "",
+    subject: "",
+    message: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem("token");
+
+      console.log("Token:", token);
+      const response = await fetch(`${API_URL}/complaints`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          customerName: formData.name,
+          subject: formData.subject,
+          message: formData.message,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to submit complaint");
+      }
+
+      alert("Complaint submitted successfully!");
+
+      setFormData({
+        name: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Complaint Error:", error);
+      alert(error.message || "Error submitting complaint");
+    }
+  };
+
+  return (
+    <>
+      <Navbar />
+
+      <div className="page">
+        <div className="card">
+          <h2>Register Complaint</h2>
+
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              type="text"
+              name="subject"
+              placeholder="Complaint Subject"
+              value={formData.subject}
+              onChange={handleChange}
+              required
+            />
+
+            <textarea
+              rows="5"
+              name="message"
+              placeholder="Describe your complaint"
+              value={formData.message}
+              onChange={handleChange}
+              required
+            ></textarea>
+
+            <button type="submit" className="danger-btn">
+              Submit Complaint
+            </button>
+          </form>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default Complaint;
+
+{
+  /*import Navbar from "../components/Navbar";
 
 function Complaint() {
   return (
@@ -17,7 +123,7 @@ function Complaint() {
   );
 }
 
-export default Complaint;
+export default Complaint;/*}
 
 
 

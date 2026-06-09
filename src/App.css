@@ -25,10 +25,13 @@ body {
 
 .nav-links {
   display: flex;
-  gap: 25px; /* ✅ SPACE BETWEEN LINKS */
+  flex-direction: row;
+  align-items: center;
+  gap: 30px;
 }
 
 .nav-links a {
+  display: inline-block;
   color: white;
   text-decoration: none;
   padding: 8px 12px;
@@ -41,10 +44,8 @@ body {
 }
 
 .page {
-  height: 80vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  min-height: 80vh;
+  padding: 20px;
 }
 
 .card {
