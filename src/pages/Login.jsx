@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import API_URL from "../services/api";
+import { requestJson } from "../services/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -22,19 +22,10 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${API_URL}/login`, {
+      const data = await requestJson("/login.php", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
-      }
 
       // Store JWT token
       localStorage.setItem("token", data.token);

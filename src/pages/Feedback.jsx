@@ -1,10 +1,12 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
-import API_URL from "../services/api";
+import { requestJson } from "../services/api";
 
 function Feedback() {
   const [formData, setFormData] = useState({
     name: "",
+    email: "",
+    phone: "",
     rating: "",
     comments: "",
   });
@@ -22,29 +24,26 @@ function Feedback() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`${API_URL}/feedback.php`, {
+      await requestJson("/feedback.php", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          customerName: formData.name,
+          customer_name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
           rating: formData.rating,
           comments: formData.comments,
         }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to submit feedback");
-      }
-
       alert("Feedback submitted successfully!");
 
       setFormData({
         name: "",
+        email: "",
+        phone: "",
         rating: "",
         comments: "",
       });
@@ -70,6 +69,22 @@ function Feedback() {
               value={formData.name}
               onChange={handleChange}
               required
+            />
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+            />
+
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={handleChange}
             />
 
             <select

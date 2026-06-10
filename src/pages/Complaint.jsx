@@ -1,10 +1,12 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
-import API_URL from "../services/api";
+import { requestJson } from "../services/api";
 
 function Complaint() {
   const [formData, setFormData] = useState({
     name: "",
+    email: "",
+    phone: "",
     subject: "",
     message: "",
   });
@@ -20,32 +22,23 @@ function Complaint() {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("token");
-
-      console.log("Token:", token);
-      const response = await fetch(`${API_URL}/complaints`, {
+      await requestJson("/complaint.php", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({
-          customerName: formData.name,
+          customer_name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
           subject: formData.subject,
           message: formData.message,
         }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to submit complaint");
-      }
-
       alert("Complaint submitted successfully!");
 
       setFormData({
         name: "",
+        email: "",
+        phone: "",
         subject: "",
         message: "",
       });
@@ -69,6 +62,24 @@ function Complaint() {
               name="name"
               placeholder="Full Name"
               value={formData.name}
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone Number"
+              value={formData.phone}
               onChange={handleChange}
               required
             />
