@@ -1,12 +1,14 @@
 const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 async function requestJson(endpoint, options = {}) {
+  const { headers: optionHeaders, ...restOptions } = options;
+
   const response = await fetch(`${API_URL}${endpoint}`, {
     headers: {
       "Content-Type": "application/json",
-      ...(options.headers || {}),
+      ...(optionHeaders || {}),
     },
-    ...options,
+    ...restOptions,
   });
 
   const contentType = response.headers.get("content-type") || "";

@@ -21,16 +21,31 @@ function Complaint() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (
+      !formData.name.trim() ||
+      !formData.subject.trim() ||
+      !formData.message.trim()
+    ) {
+      alert(
+        "Please fill in your name, subject, and message before submitting.",
+      );
+      return;
+    }
+
     try {
+      const payload = {
+        customer_name: formData.name.trim(),
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        subject: formData.subject.trim(),
+        message: formData.message.trim(),
+        comments: formData.message.trim(),
+      };
+
       await requestJson("/complaint.php", {
         method: "POST",
-        body: JSON.stringify({
-          customer_name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          subject: formData.subject,
-          message: formData.message,
-        }),
+        body: JSON.stringify(payload),
       });
 
       alert("Complaint submitted successfully!");

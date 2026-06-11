@@ -27,14 +27,12 @@ function Login() {
         body: JSON.stringify(formData),
       });
 
-      // Store JWT token
-      localStorage.setItem("token", data.token);
-      navigate("/");
+      if (data?.token) {
+        localStorage.setItem("token", data.token);
+      }
 
+      navigate("/admin/dashboard", { replace: true });
       alert("Login successful!");
-
-      // ✅ IMPORTANT: redirect after login
-      navigate("/");
     } catch (error) {
       console.error("Login Error:", error);
       alert(error.message || "Invalid credentials");

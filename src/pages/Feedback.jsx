@@ -21,21 +21,35 @@ function Feedback() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (
+      !formData.name.trim() ||
+      !formData.rating ||
+      !formData.comments.trim()
+    ) {
+      alert(
+        "Please fill in your name, rating, and feedback before submitting.",
+      );
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
+      const payload = {
+        customer_name: formData.name.trim(),
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        rating: Number(formData.rating),
+        comments: formData.comments.trim(),
+        message: formData.comments.trim(),
+      };
 
       await requestJson("/feedback.php", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({
-          customer_name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          rating: formData.rating,
-          comments: formData.comments,
-        }),
+        body: JSON.stringify(payload),
       });
 
       alert("Feedback submitted successfully!");
