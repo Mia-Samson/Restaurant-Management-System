@@ -1,32 +1,7 @@
 import { createServer } from "node:http";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const PORT = process.env.PORT || 5001;
-const DATA_DIR = join(__dirname, "data");
-const FEEDBACK_FILE = join(DATA_DIR, "feedback.json");
-const COMPLAINTS_FILE = join(DATA_DIR, "complaints.json");
-
-function ensureFile(filePath) {
-  if (!existsSync(filePath)) {
-    mkdirSync(dirname(filePath), { recursive: true });
-    writeFileSync(filePath, "[]", "utf8");
-  }
-}
-
-function readJson(filePath) {
-  ensureFile(filePath);
-  return JSON.parse(readFileSync(filePath, "utf8"));
-}
-
-function writeJson(filePath, data) {
-  ensureFile(filePath);
-  writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
-}
+const PORT = process.env.PORT || 5002;
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5001/api";
 
 function parseJsonBody(req) {
   return new Promise((resolve, reject) => {
@@ -44,7 +19,7 @@ function parseJsonBody(req) {
 
       try {
         resolve(JSON.parse(body));
-      } catch (error) {
+      } catch {
         reject(new Error("Invalid JSON body"));
       }
     });
@@ -56,6 +31,40 @@ function parseJsonBody(req) {
 function sendJson(res, statusCode, payload) {
   res.writeHead(statusCode, { "Content-Type": "application/json" });
   res.end(JSON.stringify(payload));
+}
+
+async function proxyToBackend(req, res, pathname) {
+  try {
+    const body = await parseJsonBody(req);
+    const response = await fetch(`${BACKEND_URL}${pathname}`, {
+      method: req.method,
+      headers: {
+        "Content-Type": "application/json",
+        ...(req.headers.authorization
+          ? { Authorization: req.headers.authorization }
+          : {}),
+      },
+      body: Object.keys(body).length ? JSON.stringify(body) : undefined,
+    });
+
+    const responseText = await response.text();
+    let payload = {};
+
+    if (responseText) {
+      try {
+        payload = JSON.parse(responseText);
+      } catch {
+        payload = { message: responseText };
+      }
+    }
+
+    sendJson(res, response.status, payload);
+  } catch (error) {
+    sendJson(res, 502, {
+      success: false,
+      message: error.message || "Unable to reach backend",
+    });
+  }
 }
 
 const server = createServer(async (req, res) => {
@@ -71,70 +80,23 @@ const server = createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === "POST" && url.pathname === "/api/feedback.php") {
-    try {
-      const body = await parseJsonBody(req);
-      const feedbacks = readJson(FEEDBACK_FILE);
-      const record = {
-        id: Date.now(),
-        customerName: body.customerName || body.name || "",
-        rating: body.rating || "",
-        comments: body.comments || "",
-        createdAt: new Date().toISOString(),
-      };
-
-      feedbacks.push(record);
-      writeJson(FEEDBACK_FILE, feedbacks);
-
-      sendJson(res, 200, {
-        success: true,
-        message: "Feedback saved",
-        data: record,
-      });
-    } catch (error) {
-      sendJson(res, 400, { success: false, message: error.message });
-    }
+  if (
+    req.method === "POST" &&
+    (url.pathname === "/api/feedback.php" ||
+      url.pathname === "/api/complaint.php" ||
+      url.pathname === "/api/login.php")
+  ) {
+    await proxyToBackend(req, res, url.pathname);
     return;
   }
 
-  if (req.method === "POST" && url.pathname === "/api/complaints") {
-    try {
-      const body = await parseJsonBody(req);
-      const complaints = readJson(COMPLAINTS_FILE);
-      const record = {
-        id: Date.now(),
-        customerName: body.customerName || body.name || "",
-        subject: body.subject || "",
-        message: body.message || "",
-        createdAt: new Date().toISOString(),
-      };
-
-      complaints.push(record);
-      writeJson(COMPLAINTS_FILE, complaints);
-
-      sendJson(res, 200, {
-        success: true,
-        message: "Complaint saved",
-        data: record,
-      });
-    } catch (error) {
-      sendJson(res, 400, { success: false, message: error.message });
-    }
-    return;
-  }
-
-  if (req.method === "POST" && url.pathname === "/api/login") {
-    sendJson(res, 200, { token: "demo-token" });
-    return;
-  }
-
-  if (req.method === "GET" && url.pathname === "/api/feedback.php") {
-    sendJson(res, 200, readJson(FEEDBACK_FILE));
-    return;
-  }
-
-  if (req.method === "GET" && url.pathname === "/api/complaints") {
-    sendJson(res, 200, readJson(COMPLAINTS_FILE));
+  if (
+    req.method === "GET" &&
+    (url.pathname === "/api/feedback.php" ||
+      url.pathname === "/api/complaints" ||
+      url.pathname === "/api/health")
+  ) {
+    await proxyToBackend(req, res, url.pathname);
     return;
   }
 
@@ -142,5 +104,5 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Backend listening on http://localhost:${PORT}`);
+  console.log(`Backend proxy listening on http://localhost:${PORT}`);
 });
