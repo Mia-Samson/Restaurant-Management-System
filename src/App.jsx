@@ -10,6 +10,9 @@ import AdminFoodMenu from "./pages/AdminFoodMenu";
 import AdminOperations from "./pages/AdminOperations";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
+import FeedbackAdmin from "./pages/FeedbackAdmin";
+import ComplaintsAdmin from "./pages/ComplaintsAdmin";
+import Employees from "./pages/Employees";
 
 function App() {
   return (
@@ -21,6 +24,7 @@ function App() {
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/complaint" element={<Complaint />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin/employees" element={<Employees />} />
         <Route
           path="/admin/dashboard"
           element={
@@ -57,15 +61,25 @@ function App() {
           path="/admin/feedback"
           element={
             <ProtectedRoute>
-              <AdminOperations />
+              <FeedbackAdmin />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/admin/complaints"
           element={
             <ProtectedRoute>
-              <AdminOperations />
+              <ComplaintsAdmin />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/employees"
+          element={
+            <ProtectedRoute>
+              <Employees />
             </ProtectedRoute>
           }
         />

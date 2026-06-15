@@ -140,35 +140,58 @@ body {
   margin-bottom: 16px;
 }
 
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-}
-
-.menu-card {
-  padding: 22px;
-}
-
 .empty-state {
   text-align: center;
   color: #4b5563;
 }
 
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.menu-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.menu-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
 .menu-card h3 {
-  margin: 6px 0 8px;
+  margin: 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .menu-card p {
   color: #4b5563;
-  line-height: 1.5;
+  line-height: 1.4;
+  margin: 4px 0;
 }
 
-.menu-card span {
-  display: inline-block;
-  margin-top: 12px;
-  color: #ff9800;
-  font-weight: 700;
+.menu-card .price {
+  font-weight: bold;
+  color: #d32f2f;
+  margin-top: 6px;
 }
 
 .menu-category {
@@ -176,10 +199,11 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   font-size: 0.75rem;
+  margin-bottom: 6px;
 }
 
 .page-header {
-  margin-bottom: 24px;
+  margin-bottom: 0.5rem;
 }
 
 .page-header h1 {
@@ -190,9 +214,10 @@ body {
 .page {
   min-height: 80vh;
   padding: 24px;
+  padding-top: 25px;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .card {
@@ -273,6 +298,11 @@ a.secondary-btn {
   background: #c62828;
 }
 
+.admin-actions {
+  margin-left: 270px; /* leave space for the fixed sidebar */
+  padding: 20px;
+  flex: 1;
+}
 .admin-shell {
   display: flex;
   min-height: 100vh;
@@ -319,6 +349,8 @@ a.secondary-btn {
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
   min-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-section-nav {
@@ -351,10 +383,15 @@ a.secondary-btn {
 }
 
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin: 20px 0;
+  position: fixed;
+  top: 80px;
+  left: 0;
+  width: 250px;
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  padding: 20px;
 }
 
 .stat-card {
@@ -384,9 +421,10 @@ a.secondary-btn {
 }
 
 .admin-list-item {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr; /* name | category | price | actions */
   align-items: center;
+  gap: 12px;
   padding: 12px 0;
   border-bottom: 1px solid #eee;
 }
@@ -418,4 +456,104 @@ a.secondary-btn {
     flex-wrap: wrap;
     justify-content: center;
   }
+}
+
+.feedback-page {
+  padding: 24px;
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.feedback-form input,
+.feedback-form select,
+.feedback-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.feedback-list {
+  margin-top: 24px;
+}
+
+.feedback-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.feedback-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.complaints-page {
+  padding: 24px;
+}
+
+.complaint-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.complaint-form input,
+.complaint-form select,
+.complaint-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.complaints-list {
+  margin-top: 24px;
+}
+
+.complaint-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.complaint-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.admin-list-item strong {
+  font-weight: 600;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
 }

@@ -137,7 +137,206 @@ function Feedback() {
 export default Feedback;
 
 {
-  /*import Navbar from "../components/Navbar";
+  /*import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import { requestJson } from "../services/api";
+
+const emptyForm = {
+  customer_name: "",
+  email: "",
+  phone: "",
+  rating: "",
+  comments: "",
+};
+
+function Feedback() {
+  const [feedback, setFeedback] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [editingId, setEditingId] = useState("");
+  const [formData, setFormData] = useState(emptyForm);
+
+  const token = localStorage.getItem("token");
+  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const loadFeedback = async () => {
+    try {
+      setLoading(true);
+      const data = await requestJson("/get_feedback.php");
+      setFeedback(Array.isArray(data) ? data : []);
+      setMessage("");
+    } catch (error) {
+      setMessage(error.message || "Unable to load feedback");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadFeedback();
+  }, []);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((current) => ({ ...current, [name]: value }));
+  };
+
+  const startEdit = (item) => {
+    setEditingId(item._id || item.id);
+    setFormData({
+      customer_name: item.customer_name || item.name || "",
+      email: item.email || "",
+      phone: item.phone || "",
+      rating: item.rating ?? "",
+      comments: item.comments || item.message || "",
+    });
+  };
+
+  const resetForm = () => {
+    setEditingId("");
+    setFormData(emptyForm);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (
+      !formData.customer_name.trim() ||
+      !formData.rating ||
+      !formData.comments.trim()
+    ) {
+      setMessage("Please enter a name, rating, and feedback comment.");
+      return;
+    }
+
+    try {
+      const payload = {
+        customer_name: formData.customer_name.trim(),
+        name: formData.customer_name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        rating: Number(formData.rating),
+        comments: formData.comments.trim(),
+        message: formData.comments.trim(),
+      };
+
+      if (editingId) {
+        await requestJson(`/feedback/${editingId}`, {
+          method: "PUT",
+          headers: authHeaders,
+          body: JSON.stringify(payload),
+        });
+        setMessage("Feedback updated successfully.");
+      } else {
+        await requestJson("/feedback", {
+          method: "POST",
+          headers: authHeaders,
+          body: JSON.stringify(payload),
+        });
+        setMessage("Feedback created successfully.");
+      }
+
+      resetForm();
+      loadFeedback();
+    } catch (error) {
+      setMessage(error.message || "Unable to save feedback");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this feedback entry?")) return;
+
+    try {
+      await requestJson(`/feedback/${id}`, {
+        method: "DELETE",
+        headers: authHeaders,
+      });
+      setFeedback((current) =>
+        current.filter((item) => (item._id || item.id) !== id),
+      );
+      if (editingId === id) resetForm();
+      setMessage("Feedback deleted successfully.");
+    } catch (error) {
+      setMessage(error.message || "Unable to delete feedback");
+    }
+  };
+
+  return (
+    <>
+      <Navbar />
+      <div className="complaint-page">
+        <div className="complaint-card">
+          <h2>Customer Feedback</h2>
+          <p>We value your thoughts! Please share your experience.</p>
+
+          {message && <p className="empty-state">{message}</p>}
+
+          <form className="complaint-form" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="customer_name"
+              placeholder="Full Name"
+              value={formData.customer_name}
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+            />
+
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={handleChange}
+            />
+
+            <select
+              name="rating"
+              value={formData.rating}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Rating</option>
+              <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+              <option value="4">⭐⭐⭐⭐ Very Good</option>
+              <option value="3">⭐⭐⭐ Good</option>
+              <option value="2">⭐⭐ Fair</option>
+              <option value="1">⭐ Poor</option>
+            </select>
+
+            <textarea
+              rows="5"
+              name="comments"
+              placeholder="Enter feedback"
+              value={formData.comments}
+              onChange={handleChange}
+              required
+            ></textarea>
+
+            <button type="submit" className="primary-btn">
+              Submit Feedback
+            </button>
+          </form>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default Feedback;
+
+
+
+
+
+import Navbar from "../components/Navbar";
 
 function Feedback() {
   return (
@@ -198,9 +397,6 @@ function Feedback() {
 
 export default Feedback;
 */
-}
-
-{
   /*import { useState } from "react";
 import Navbar from "../components/Navbar";
 import API_URL from "../services/api";
