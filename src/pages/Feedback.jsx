@@ -203,7 +203,7 @@ function Feedback() {
     if (
       !formData.customer_name.trim() ||
       !formData.rating ||
-      !formData.comments.trim()
+      !formData.comments.tr im()
     ) {
       setMessage("Please enter a name, rating, and feedback comment.");
       return;
