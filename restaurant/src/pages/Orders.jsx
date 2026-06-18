@@ -58,6 +58,15 @@ function Orders() {
   const addItem = () => {
     if (!formData.food_item) return;
 
+    const selectedItem = menuItems.find(
+      (item) => item.food_name === formData.food_item,
+    );
+
+    if (!selectedItem) {
+      console.error("Food item not found");
+      return;
+    }
+
     setFormData((p) => ({
       ...p,
       items: [
@@ -65,6 +74,7 @@ function Orders() {
         {
           food_item: p.food_item,
           quantity: Number(p.quantity),
+          price: Number(selectedItem.price),
         },
       ],
       food_item: "",
