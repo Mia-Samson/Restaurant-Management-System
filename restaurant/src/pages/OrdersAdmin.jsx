@@ -26,6 +26,7 @@ function OrdersAdmin() {
     const data = await requestJson("/get_orders.php", {
       headers: authHeaders,
     });
+    console.log("ADMIN RESPONSE:", data);
     setOrders(Array.isArray(data) ? data : []);
   };
 
@@ -51,9 +52,15 @@ function OrdersAdmin() {
     setItem((p) => ({ ...p, [name]: value }));
   };
 
-  // ADD MULTIPLE ITEMS
   const addItem = () => {
     if (!item.food_item) return;
+
+    const selectedItem = menu.find((m) => m.food_name === item.food_item);
+
+    if (!selectedItem) {
+      console.log("Food not found");
+      return;
+    }
 
     setForm((p) => ({
       ...p,
@@ -62,6 +69,7 @@ function OrdersAdmin() {
         {
           food_item: item.food_item,
           quantity: Number(item.quantity),
+          price: Number(selectedItem.price || 0),
         },
       ],
     }));
